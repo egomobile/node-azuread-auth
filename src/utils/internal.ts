@@ -1,0 +1,31 @@
+// This file is part of the @egomobile/azuread-auth distribution.
+// Copyright (c) Next.e.GO Mobile SE, Aachen, Germany (https://e-go-mobile.com/)
+//
+// @egomobile/azuread-auth is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as
+// published by the Free Software Foundation, version 3.
+//
+// @egomobile/azuread-auth is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+export function isNil(val: unknown): val is (undefined | null) {
+    return typeof val === 'undefined' || val === null;
+}
+
+export function isTruely(val: any): boolean {
+    switch (String(val || '').toLowerCase().trim()) {
+        case 'true':
+        case '1':
+        case 'yes':
+        case 'y':
+            return true;
+
+        default:
+            return false;
+    }
+}
