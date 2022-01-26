@@ -11,6 +11,7 @@
 - [Install](#install)
 - [Usage](#usage)
   - [Quick example](#quick-example)
+- [Documentation](#documentation)
 
 <a name="install"></a>
 
@@ -56,9 +57,9 @@ async function main() {
   initServerForAzureADBearerStrategy(app);
 
   // use middleware by 'withAzureADBearer()' to validate and extract
-  // bearer token by Azure AD instance
+  // bearer token of Azure AD instance
   app.get("/", [withAzureADBearer()], async (request, response) => {
-    // at this point we have a value token here
+    // at this point we have a valid token here
     console.log("authInfo", request.authInfo);
   });
 
@@ -67,3 +68,8 @@ async function main() {
 
 main().catch(console.error);
 ```
+
+## Documentation [<a href="#toc">↑</a>]
+
+The API documentation can be found
+[here](https://egomobile.github.io/node-azuread-auth/).
