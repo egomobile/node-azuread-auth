@@ -11,6 +11,7 @@
 - [Install](#install)
 - [Usage](#usage)
   - [Quick example](#quick-example)
+- [Documentation](#documentation)
 
 <a name="install"></a>
 
@@ -67,3 +68,8 @@ async function main() {
 
 main().catch(console.error);
 ```
+
+## Documentation [<a href="#toc">↑</a>]
+
+The API documentation can be found
+[here](https://egomobile.github.io/node-azuread-auth/).

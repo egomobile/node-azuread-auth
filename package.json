@@ -1,6 +1,6 @@
 {
   "name": "@egomobile/azuread-auth",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A middleware, which wraps functions of passport-azure-ad module, written for passport.",
   "main": "lib/index.js",
   "engines": {
