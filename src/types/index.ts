@@ -15,4 +15,4 @@
 
 // export passport stuff
 export { AuthenticateOptions } from 'passport';
-export { IBearerStrategyOption } from 'passport-azure-ad';
+export { IBearerStrategyOption, ITokenPayload } from 'passport-azure-ad';
