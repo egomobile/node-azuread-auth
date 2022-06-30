@@ -14,5 +14,5 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 // export passport stuff
-export { AuthenticateOptions } from 'passport';
-export { IBearerStrategyOption, ITokenPayload } from 'passport-azure-ad';
+export { AuthenticateOptions } from "passport";
+export { IBearerStrategyOption, ITokenPayload } from "passport-azure-ad";

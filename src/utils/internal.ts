@@ -14,15 +14,15 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 export function isNil(val: unknown): val is (undefined | null) {
-    return typeof val === 'undefined' || val === null;
+    return typeof val === "undefined" || val === null;
 }
 
 export function isTruely(val: any): boolean {
-    switch (String(val || '').toLowerCase().trim()) {
-        case 'true':
-        case '1':
-        case 'yes':
-        case 'y':
+    switch (String(val || "").toLowerCase().trim()) {
+        case "true":
+        case "1":
+        case "yes":
+        case "y":
             return true;
 
         default:
