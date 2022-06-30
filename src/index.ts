@@ -17,14 +17,14 @@
 
 /// <reference path="../index.d.ts" />
 
-import Passport, { AuthenticateOptions } from 'passport';
-import PassportAzureAd, { BearerStrategy, IBearerStrategyOption } from 'passport-azure-ad';
-import { HttpMiddleware, IHttpServer } from '@egomobile/http-server';
-import { isNil, isTruely } from './utils/internal';
-import type { Nilable } from './types/internal';
+import Passport, { AuthenticateOptions } from "passport";
+import PassportAzureAd, { BearerStrategy, IBearerStrategyOption } from "passport-azure-ad";
+import { HttpMiddleware, IHttpServer } from "@egomobile/http-server";
+import { isNil, isTruely } from "./utils/internal";
+import type { Nilable } from "./types/internal";
 
 /**
- * Options for 'initServerForAzureADBearerStrategy()' function.
+ * Options for `initServerForAzureADBearerStrategy()` function.
  */
 export interface IInitServerForAzureADOptions {
     /**
@@ -34,20 +34,26 @@ export interface IInitServerForAzureADOptions {
 }
 
 /**
- * Options for 'withAzureADBearer()' function.
+ * Options for `withAzureADBearer()` function.
  */
 export interface IWithAzureADBearerOptions {
     /**
-     * Options for 'authenticate' method of passport.
+     * Options for `authenticate` method of passport.
      */
     authenticateOptions?: Nilable<AuthenticateOptions>;
     /**
-     * Name of the stradegy. Default: 'oauth-bearer'
+     * Avoid to set `WWW-Authenticate` header.
+     */
+    noWWWAuthenticate?: Nilable<boolean>;
+    /**
+     * Name of the stradegy.
+     *
+     * @default "oauth-bearer"
      */
     stradegy?: Nilable<string>;
 }
 
-const allowedLogLevels = ['info', 'warn', 'error'];
+const allowedLogLevels = ["info", "warn", "error"];
 
 /**
  * Initializes a server and passport instance using
@@ -62,7 +68,7 @@ const allowedLogLevels = ['info', 'warn', 'error'];
  *
  * // by default, the following environment variables are used
  * // which represent the options of BearerStrategy by
- * // 'passport-azure-ad' module:
+ * // `passport-azure-ad` module:
  * //
  * // - [required] AZURE_AD_CLIENT_ID => IBearerStrategyOption.clientID
  * // - [required] AZURE_AD_IDENTITY_METADATA => IBearerStrategyOption.identityMetadata
@@ -90,8 +96,8 @@ export function initServerForAzureADBearerStrategy(
     options?: Nilable<IInitServerForAzureADOptions>
 ) {
     if (!isNil(options)) {
-        if (typeof options !== 'object') {
-            throw new TypeError('options must be of type object');
+        if (typeof options !== "object") {
+            throw new TypeError("options must be of type object");
         }
     }
 
@@ -100,17 +106,17 @@ export function initServerForAzureADBearerStrategy(
         const loggingLevel: any = process.env.AZURE_AD_LOGGING_LEVEL?.toLowerCase().trim() || undefined;
         if (loggingLevel?.length) {
             if (!allowedLogLevels.includes(loggingLevel)) {
-                throw new TypeError(`AZURE_AD_LOGGING_LEVEL must be one of the following values: ${allowedLogLevels.join(', ')}`);
+                throw new TypeError(`AZURE_AD_LOGGING_LEVEL must be one of the following values: ${allowedLogLevels.join(", ")}`);
             }
         }
 
         strategyConfig = {
-            identityMetadata: process.env.AZURE_AD_IDENTITY_METADATA!.trim(),
-            clientID: process.env.AZURE_AD_CLIENT_ID!.trim(),
-            audience: process.env.AZURE_AD_AUDIENCE?.trim() || undefined,
-            policyName: process.env.AZURE_AD_POLICY_NAME?.trim() || undefined,
-            isB2C: isTruely(process.env.AZURE_AD_IS_B2C),
-            validateIssuer: isTruely(process.env.AZURE_AD_VALIDATE_ISSUER),
+            "identityMetadata": process.env.AZURE_AD_IDENTITY_METADATA!.trim(),
+            "clientID": process.env.AZURE_AD_CLIENT_ID!.trim(),
+            "audience": process.env.AZURE_AD_AUDIENCE?.trim() || undefined,
+            "policyName": process.env.AZURE_AD_POLICY_NAME?.trim() || undefined,
+            "isB2C": isTruely(process.env.AZURE_AD_IS_B2C),
+            "validateIssuer": isTruely(process.env.AZURE_AD_VALIDATE_ISSUER),
             loggingLevel
         };
     }
@@ -125,7 +131,7 @@ export function initServerForAzureADBearerStrategy(
 
 /**
  * Creates a new middleware, which checks if an Azure AD
- * OAuth Token is valid or not, by using 'oauth-bearer'
+ * OAuth Token is valid or not, by using `oauth-bearer`
  * stradegy.
  *
  * @example
@@ -137,7 +143,7 @@ export function initServerForAzureADBearerStrategy(
  *
  * initServerForAzureADBearerStrategy(app)
  *
- * // use middleware by 'withAzureADBearer()' to validate and extract
+ * // use middleware by `withAzureADBearer()` to validate and extract
  * // bearer token by Azure AD instance
  * app.get('/', [withAzureADBearer()], async (request, response) => {
  *   // at this point we have a value token here
@@ -155,30 +161,58 @@ export function initServerForAzureADBearerStrategy(
  */
 export function withAzureADBearer(options?: Nilable<IWithAzureADBearerOptions>): HttpMiddleware {
     if (!isNil(options?.authenticateOptions)) {
-        if (typeof options!.authenticateOptions !== 'object') {
-            throw new TypeError('options.authenticateOptions must be of type object');
+        if (typeof options!.authenticateOptions !== "object") {
+            throw new TypeError("options.authenticateOptions must be of type object");
         }
     }
 
     if (!isNil(options?.stradegy)) {
-        if (typeof options!.stradegy !== 'string') {
-            throw new TypeError('options.stradegy must be of type string');
+        if (typeof options!.stradegy !== "string") {
+            throw new TypeError("options.stradegy must be of type string");
         }
     }
 
     const authenticateOpts: AuthenticateOptions = {
-        session: false,
+        "session": false,
 
         ...(options?.authenticateOptions || {})
     };
 
-    return Passport.authenticate(
-        options?.stradegy || 'oauth-bearer',
+    const middleware = Passport.authenticate(
+        options?.stradegy || "oauth-bearer",
         authenticateOpts
-    ) as any;
+    ) as HttpMiddleware;
+
+    const headersToExclude: any[] = [];
+
+    if (options?.noWWWAuthenticate) {
+        headersToExclude.push("www-authenticate");
+    }
+
+    if (headersToExclude.length) {
+        return async (request, response, next) => {
+            const setHeader = response.setHeader.bind(response);
+
+            // overwrite header
+            response.setHeader = (name, value) => {
+                if (headersToExclude.includes(name?.toLowerCase().trim())) {
+                    return response;  // do nothing
+                }
+                else {
+                    return setHeader(name, value);
+                }
+            };
+
+            return middleware(request, response, next);
+        };
+    }
+    else {
+        // nothing to wrap
+        return middleware;
+    }
 }
 
-export * from './types';
+export * from "./types";
 
 // export passport stuff
 export const passport = Passport;
